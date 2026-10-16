@@ -28,7 +28,7 @@ func Execute() {
 		printUsage()
 		os.Exit(0)
 	default:
-		fmt.Printf(os.Stderr, "unknown command: %s\n\n", cmd)
+		fmt.Fprintf(os.Stderr, "unknown command: %s\n\n", cmd)
 		printUsage()
 		os.Exit(1)
 	}
