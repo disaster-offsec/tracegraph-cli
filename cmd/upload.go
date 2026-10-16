@@ -17,11 +17,18 @@ func runUpload(args []string) {
 	mustParse(fs, args)
 
 	path := requireOneArg(fs, "usage: tracegraph-cli upload <path>")
+
 	if err := bundle.Validate(path); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
+	data, err := bundle.Pack(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	url := config.BackendURL(*backend)
-	fmt.Printf("backend=%s, path=%s\n", url, path)
+	fmt.Printf("backend=%s, path=%s, zip_size=%d\n", url, path, len(data))
 }

@@ -1,6 +1,8 @@
 package bundle
 
 import (
+	"archive/zip"
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -41,4 +43,31 @@ func Validate(folder string) error {
 		}
 	}
 	return nil
+}
+
+func Pack(folder string) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	zw := zip.NewWriter(buf)
+
+	for _, name := range RequiredFiles {
+		path := filepath.Join(folder, name)
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil, fmt.Errorf("read %s: %w", name, err)
+		}
+
+		w, err := zw.Create(name)
+		if err != nil {
+			return nil, fmt.Errorf("zip create %s: %w", name, err)
+		}
+		if _, err := w.Write(data); err != nil {
+			return nil, fmt.Errorf("zip write %s: %w", name, err)
+		}
+	}
+
+	if err := zw.Close(); err != nil {
+		return nil, fmt.Errorf("zip close: %w", err)
+	}
+
+	return buf.Bytes(), nil
 }

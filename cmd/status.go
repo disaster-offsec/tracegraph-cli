@@ -6,6 +6,7 @@ import (
 
 	"tracegraph-cli/internal/config"
 )
+
 // runStatus handles the `status` command.
 func runStatus(args []string) {
 	fs := flag.NewFlagSet("status", flag.ContinueOnError)
