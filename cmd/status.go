@@ -3,7 +3,9 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"os"
 
+	"tracegraph-cli/internal/client"
 	"tracegraph-cli/internal/config"
 )
 
@@ -16,5 +18,12 @@ func runStatus(args []string) {
 
 	id := requireOneArg(fs, "usage: tracegraph-cli status <id>")
 	url := config.BackendURL(*backend)
-	fmt.Printf("backend=%s, id=%s\n", url, id)
+
+	st, err := client.GetStatus(url, id)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Case %s: status=%s\n", st.ID, st.Status)
 }

@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"os"
 
+	"tracegraph-cli/internal/client"
 	"tracegraph-cli/internal/config"
 )
 
@@ -16,5 +19,17 @@ func runGet(args []string) {
 
 	id := requireOneArg(fs, "usage: tracegraph-cli get <id>")
 	url := config.BackendURL(*backend)
-	fmt.Printf("backend=%s, id=%s\n", url, id)
+
+	c, err := client.GetCase(url, id)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	out, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Println(string(out))
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"tracegraph-cli/internal/bundle"
+	"tracegraph-cli/internal/client"
 	"tracegraph-cli/internal/config"
 )
 
@@ -30,5 +31,12 @@ func runUpload(args []string) {
 	}
 
 	url := config.BackendURL(*backend)
-	fmt.Printf("backend=%s, path=%s, zip_size=%d\n", url, path, len(data))
+
+	created, err := client.UploadCase(url, data)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Case created: id=%s, status=%s\n", created.ID, created.Status)
 }
