@@ -3,7 +3,9 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"os"
 
+	"tracegraph-cli/internal/bundle"
 	"tracegraph-cli/internal/config"
 )
 
@@ -15,6 +17,11 @@ func runUpload(args []string) {
 	mustParse(fs, args)
 
 	path := requireOneArg(fs, "usage: tracegraph-cli upload <path>")
+	if err := bundle.Validate(path); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	url := config.BackendURL(*backend)
 	fmt.Printf("backend=%s, path=%s\n", url, path)
 }
